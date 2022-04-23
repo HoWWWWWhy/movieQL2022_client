@@ -2,9 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./components/App";
 
-const root = ReactDOM.render(document.getElementById("root"));
-root.render(
+ReactDOM.render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>
+  </React.StrictMode>,
+  document.getElementById("root")
 );
