@@ -1,14 +1,17 @@
 import { gql, useQuery } from "@apollo/client";
 import styled from "styled-components";
+import { useParams, NavLink } from "react-router-dom";
 
 import Movie from "../components/Movie";
 
 const GET_MOVIES = gql`
-  query Movies {
-    movies {
+  query Movies($limit: Int, $rating: Float, $sort_by: String) {
+    movies(limit: $limit, rating: $rating, sort_by: $sort_by) {
       id
       title
       medium_cover_image
+      rating
+      year
     }
   }
 `;
@@ -26,7 +29,7 @@ const Header = styled.header`
 `;
 
 const Main = styled.main`
-  background-color: #ffc048;
+  background-color: #ffeccc;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -35,22 +38,30 @@ const Main = styled.main`
 `;
 
 const Side = styled.aside`
-  background-color: #e17055;
+  background-color: #00a15b;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   width: 20vw;
-  height: 100%;
+  height: 75vh;
   position: fixed;
   left: 0;
+  padding-bottom: 5vh;
   margin-right: 10px;
 `;
 
-const Option = styled.h2`
+const Option = styled.li`
   font-size: 20px;
+  list-style: none;
+  width: 100%
+  height: 30px;
+  margin: 30px;
+  text-align: center;
+  font-weight: 800;
 `;
 const Footer = styled.footer`
-  background-color: #485460;
+  background-color: #005248;
   color: white;
   display: flex;
   flex-direction: column;
@@ -66,6 +77,17 @@ const Title = styled.h1`
   font-weight: 300;
 `;
 
+const Loading = styled.div`
+  display: flex;
+  width: 100%;
+  height: 75vh;
+  font-size: 50px;
+  justify-content: center;
+  align-items: center;
+  padding-left: 21vw;
+  padding-right: 1vw;
+`;
+
 const Movies = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -74,14 +96,51 @@ const Movies = styled.div`
   padding-top: 10px;
   padding-left: 21vw;
   padding-right: 1vw;
+
+  @media only screen and (min-width: 1200px) {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  @media only screen and (min-width: 1600px) {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  @media only screen and (min-width: 2000px) {
+    grid-template-columns: repeat(7, 1fr);
+  }
 `;
 
 const Home = () => {
-  const { loading, error, data } = useQuery(GET_MOVIES);
-  if (loading) return "Loading...";
+  const { minimum_rating, option } = useParams();
+  console.log(minimum_rating);
+  console.log(option);
+
+  let variables = {};
+  if (minimum_rating) {
+    variables.rating = +minimum_rating;
+  } else if (option) {
+    variables.sort_by = option;
+  }
+  console.log("variables", variables);
+  const { loading, error, data } = useQuery(GET_MOVIES, {
+    variables: variables,
+  });
+
+  // route that it links to is currently selected.
+  let activeStyle = {
+    textDecoration: "none",
+    color: "white",
+    backgroundColor: "black",
+    width: "100%",
+  };
+  let inactiveStyle = {
+    textDecoration: "none",
+    color: "black",
+    backgroundColor: "white",
+    width: "100%",
+  };
+  //if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
-  if (data && data.movies) {
-    console.log(data.movies);
+  else {
+    //sconsole.log(data.movies);
     return (
       <>
         <Header>
@@ -89,20 +148,53 @@ const Home = () => {
         </Header>
         <Main>
           <Side>
-            <Option>aaaa</Option>
-            <Option>dbbbbd</Option>
-            <Option>dddddd</Option>
+            <NavLink
+              to={"/"}
+              style={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
+            >
+              <Option>기본</Option>
+            </NavLink>
+            <NavLink
+              to={`sort_by/title`}
+              style={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
+            >
+              <Option>이름순</Option>
+            </NavLink>
+            <NavLink
+              to={`sort_by/rating`}
+              style={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
+            >
+              <Option>평점순</Option>
+            </NavLink>
+            <NavLink
+              to={`sort_by/year`}
+              style={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
+            >
+              <Option>연도순</Option>
+            </NavLink>
+            <NavLink
+              to={`rating/5`}
+              style={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
+            >
+              <Option>최소 평점</Option>
+            </NavLink>
           </Side>
-          <Movies>
-            {data.movies.map((movie) => (
-              <Movie
-                key={movie.id}
-                id={movie.id}
-                title={movie.title}
-                bg={movie.medium_cover_image}
-              />
-            ))}
-          </Movies>
+          {loading ? (
+            <Loading>Loading...</Loading>
+          ) : (
+            <Movies>
+              {data?.movies.map((movie) => (
+                <Movie
+                  key={movie.id}
+                  id={movie.id}
+                  title={movie.title}
+                  rating={movie.rating}
+                  year={movie.year}
+                  bg={movie.medium_cover_image}
+                />
+              ))}
+            </Movies>
+          )}
         </Main>
 
         <Footer>
