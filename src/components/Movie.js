@@ -2,8 +2,9 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 const Container = styled.div`
-  height: 390px;
-  width: 100%;
+  height: 435px;
+  width: 230px;
+  margin: 10px;
 `;
 
 const Title = styled.h1`
@@ -32,7 +33,7 @@ const Info = styled.div`
 
 const Poster = styled.div`
   background-image: url(${(props) => props.bg});
-  height: 300px;
+  height: 345px;
   weight: 100%;
   background-size: cover;
   background-position: center center;

@@ -30,10 +30,10 @@ const Header = styled.header`
 
 const Main = styled.main`
   background-color: #ffeccc;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
 
+  display: flex;
+  justify-content: center;
+  justify-items: center;
   top: 0px;
 `;
 
@@ -43,12 +43,11 @@ const Side = styled.aside`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 20vw;
+  width: 200px;
   height: 75vh;
   position: fixed;
   left: 0;
   padding-bottom: 5vh;
-  margin-right: 10px;
 `;
 
 const Option = styled.li`
@@ -90,20 +89,32 @@ const Loading = styled.div`
 
 const Movies = styled.div`
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-gap: 25px;
-  width: 80%;
+  width: 100%;
   padding-top: 10px;
-  padding-left: 21vw;
-  padding-right: 1vw;
 
-  @media only screen and (min-width: 1200px) {
+  padding-left: 200px;
+  justify-content: space-evenly;
+  justify-items: center;
+
+  @media only screen and (min-width: 450px) {
+    grid-template-columns: repeat(1, 1fr);
+  }
+  @media only screen and (min-width: 740px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media only screen and (min-width: 1030px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @media only screen and (min-width: 1320px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  @media only screen and (min-width: 1610px) {
     grid-template-columns: repeat(5, 1fr);
   }
-  @media only screen and (min-width: 1600px) {
+  @media only screen and (min-width: 1900px) {
     grid-template-columns: repeat(6, 1fr);
   }
-  @media only screen and (min-width: 2000px) {
+  @media only screen and (min-width: 2190px) {
     grid-template-columns: repeat(7, 1fr);
   }
 `;
