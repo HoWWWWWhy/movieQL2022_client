@@ -33,6 +33,7 @@ const Info = styled.div`
 
 const Poster = styled.div`
   background-image: url(${(props) => props.bg});
+  background-color: #ffa801;
   height: 345px;
   weight: 100%;
   background-size: cover;

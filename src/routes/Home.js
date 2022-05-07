@@ -1,6 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
-import styled from "styled-components";
 import { useParams, NavLink } from "react-router-dom";
+import styled from "styled-components";
 
 import Movie from "../components/Movie";
 
@@ -30,7 +30,6 @@ const Header = styled.header`
 
 const Main = styled.main`
   background-color: #ffeccc;
-
   display: flex;
   justify-content: center;
   justify-items: center;
@@ -87,6 +86,17 @@ const Loading = styled.div`
   padding-right: 1vw;
 `;
 
+const Error = styled.div`
+  display: flex;
+  width: 100%;
+  height: 75vh;
+  font-size: 50px;
+  justify-content: center;
+  align-items: center;
+  padding-left: 21vw;
+  padding-right: 1vw;
+`;
+
 const Movies = styled.div`
   display: grid;
   width: 100%;
@@ -121,8 +131,8 @@ const Movies = styled.div`
 
 const Home = () => {
   const { minimum_rating, option } = useParams();
-  console.log(minimum_rating);
-  console.log(option);
+  console.log("minimum_rating", minimum_rating);
+  console.log("option", option);
 
   let variables = {};
   if (minimum_rating) {
@@ -149,71 +159,78 @@ const Home = () => {
     width: "100%",
   };
   //if (loading) return "Loading...";
-  if (error) return `Error! ${error.message}`;
-  else {
-    //sconsole.log(data.movies);
-    return (
-      <>
-        <Header>
-          <Title>MOVIE</Title>
-        </Header>
-        <Main>
-          <Side>
-            <NavLink
-              to={"/"}
-              style={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
-            >
-              <Option>기본</Option>
-            </NavLink>
-            <NavLink
-              to={`sort_by/title`}
-              style={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
-            >
-              <Option>이름순</Option>
-            </NavLink>
-            <NavLink
-              to={`sort_by/rating`}
-              style={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
-            >
-              <Option>평점순</Option>
-            </NavLink>
-            <NavLink
-              to={`sort_by/year`}
-              style={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
-            >
-              <Option>연도순</Option>
-            </NavLink>
-            <NavLink
-              to={`rating/5`}
-              style={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
-            >
-              <Option>최소 평점</Option>
-            </NavLink>
-          </Side>
-          {loading ? (
-            <Loading>Loading...</Loading>
-          ) : (
-            <Movies>
-              {data?.movies.map((movie) => (
-                <Movie
-                  key={movie.id}
-                  id={movie.id}
-                  title={movie.title}
-                  rating={movie.rating}
-                  year={movie.year}
-                  bg={movie.medium_cover_image}
-                />
-              ))}
-            </Movies>
-          )}
-        </Main>
-
-        <Footer>
-          <p>©Copyright 2022 by HoWWWWWhy. All rights reversed.</p>
-        </Footer>
-      </>
-    );
+  // if (error) return `Error! ${error.message}`;
+  // else {
+  if (data) {
+    console.log(data.movies);
   }
+
+  //console.log("error", error);
+  //console.log("loading", loading);
+  return (
+    <>
+      <Header>
+        <Title>MOVIE</Title>
+      </Header>
+
+      <Main>
+        <Side>
+          <NavLink
+            to={"/"}
+            style={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
+          >
+            <Option>기본</Option>
+          </NavLink>
+          <NavLink
+            to={`sort_by/title`}
+            style={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
+          >
+            <Option>이름순</Option>
+          </NavLink>
+          <NavLink
+            to={`sort_by/rating`}
+            style={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
+          >
+            <Option>평점순</Option>
+          </NavLink>
+          <NavLink
+            to={`sort_by/year`}
+            style={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
+          >
+            <Option>연도순</Option>
+          </NavLink>
+          <NavLink
+            to={`rating/5`}
+            style={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
+          >
+            <Option>최소 평점</Option>
+          </NavLink>
+        </Side>
+        {loading ? (
+          <Loading>Loading...</Loading>
+        ) : error ? (
+          <Error>Error! {error.message}</Error>
+        ) : (
+          <Movies>
+            {data?.movies.map((movie) => (
+              <Movie
+                key={movie.id}
+                id={movie.id}
+                title={movie.title}
+                rating={movie.rating}
+                year={movie.year}
+                bg={movie.medium_cover_image}
+              />
+            ))}
+          </Movies>
+        )}
+      </Main>
+      <Footer>
+        <p>©Copyright 2022 by HoWWWWWhy. All rights reversed.</p>
+      </Footer>
+    </>
+  );
+  //}
 };
 
 export default Home;
