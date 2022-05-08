@@ -65,7 +65,7 @@ const Footer = styled.footer`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 5vh;
+  height: 35px;
   bottom: 0px;
   position: sticky;
 `;
