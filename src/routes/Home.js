@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, NavLink, useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { BsFillCaretUpFill, BsFillCaretDownFill } from "react-icons/bs";
@@ -167,15 +167,43 @@ const Home = () => {
   const navigate = useNavigate();
   let location = useLocation();
 
-  // console.log("location:", location);
+  //console.log("location:", location);
 
   const { minimum_rating, option, order } = useParams();
 
   const [desc, setDesc] = useState(order === "asc" ? false : true);
-  const [nameDesc, setNameDesc] = useState(order === "asc" ? false : true);
+  const [titleDesc, setTitleDesc] = useState(order === "asc" ? false : true);
   const [ratingDesc, setRatingDesc] = useState(order === "asc" ? false : true);
   const [yearDesc, setYearDesc] = useState(order === "asc" ? false : true);
 
+  useEffect(() => {
+    // 브라우저 API를 이용하여 문서 타이틀을 업데이트합니다.
+    console.log("useEffect");
+  }, []);
+
+  const currentPath = location.pathname;
+  const prevPath = location.state?.prevPath;
+  let currentDefaultPath = currentPath;
+  let prevDefaultPath = prevPath;
+  let currentPathCriterion;
+  if (currentPath.includes("order_by/asc")) {
+    currentDefaultPath = currentPath.replace("/order_by/asc", "");
+    if (currentDefaultPath === "") {
+      currentDefaultPath = "/";
+    }
+  }
+
+  currentPathCriterion = currentDefaultPath.split("/").pop();
+  if (prevPath && prevPath.includes("order_by/asc")) {
+    prevDefaultPath = prevPath.replace("/order_by/asc", "");
+  }
+
+  // console.log("#####   Home   ######");
+  // console.log("currentPath:", currentPath);
+  // console.log("prevPath:", prevPath);
+  // console.log("currentDefaultPath:", currentDefaultPath);
+  // console.log("prevDefaultPath:", prevDefaultPath);
+  // console.log("######################");
   // console.log("minimum_rating", minimum_rating);
   // console.log("option", option);
   // console.log("order", order);
@@ -197,31 +225,54 @@ const Home = () => {
     variables: variables,
   });
 
-  const toggleOrder = (criterion, path) => {
+  const toggleOrder = (toggle, criterion, path) => {
+    //console.log("#####   toggleOrder   ######");
+
     let criterion_desc;
+    // console.log("criterion:", criterion);
+    // console.log("currentPathCriterion:", currentPathCriterion);
+    // console.log("######################");
+
     switch (criterion) {
-      case "name":
-        criterion_desc = nameDesc;
-        setNameDesc(!nameDesc);
+      case "title":
+        criterion_desc = titleDesc;
+        if (criterion === currentPathCriterion) {
+          setTitleDesc(!titleDesc);
+          criterion_desc = !titleDesc;
+        }
         break;
       case "rating":
         criterion_desc = ratingDesc;
-        setRatingDesc(!ratingDesc);
+        if (criterion === currentPathCriterion) {
+          setRatingDesc(!ratingDesc);
+          criterion_desc = !ratingDesc;
+        }
         break;
       case "year":
         criterion_desc = yearDesc;
-        setYearDesc(!yearDesc);
+        if (criterion === currentPathCriterion) {
+          setYearDesc(!yearDesc);
+          criterion_desc = !yearDesc;
+        }
         break;
       default:
         criterion_desc = desc;
-        setDesc(!desc);
+        if (criterion === currentPathCriterion) {
+          setDesc(!desc);
+          criterion_desc = !desc;
+        }
         break;
     }
 
-    if (criterion_desc) {
-      navigate(path + "/order_by/asc");
+    console.log("criterion_desc", criterion_desc);
+    if (!criterion_desc) {
+      navigate(path + "/order_by/asc", {
+        state: { prevPath: location.pathname },
+      });
     } else {
-      navigate(path);
+      navigate(path, {
+        state: { prevPath: location.pathname },
+      });
     }
   };
 
@@ -257,7 +308,7 @@ const Home = () => {
       <Main>
         <Side>
           <OptionBox
-            onClick={() => toggleOrder("", "")}
+            onClick={() => toggleOrder(true, "", "")}
             active={
               location.pathname === "/" || location.pathname === "/order_by/asc"
             }
@@ -273,7 +324,7 @@ const Home = () => {
           </OptionBox>
 
           <OptionBox
-            onClick={() => toggleOrder("name", "/sort_by/title")}
+            onClick={() => toggleOrder(true, "title", "/sort_by/title")}
             active={
               location.pathname === "/sort_by/title" ||
               location.pathname === "/sort_by/title/order_by/asc"
@@ -281,7 +332,7 @@ const Home = () => {
           >
             <Option>이름순</Option>
             <Order>
-              {nameDesc ? (
+              {titleDesc ? (
                 <BsFillCaretDownFill size={20} />
               ) : (
                 <BsFillCaretUpFill size={20} />
@@ -290,7 +341,7 @@ const Home = () => {
           </OptionBox>
 
           <OptionBox
-            onClick={() => toggleOrder("rating", "/sort_by/rating")}
+            onClick={() => toggleOrder(true, "rating", "/sort_by/rating")}
             active={
               location.pathname === "/sort_by/rating" ||
               location.pathname === "/sort_by/rating/order_by/asc"
@@ -307,7 +358,7 @@ const Home = () => {
           </OptionBox>
 
           <OptionBox
-            onClick={() => toggleOrder("year", "/sort_by/year")}
+            onClick={() => toggleOrder(true, "year", "/sort_by/year")}
             active={
               location.pathname === "/sort_by/year" ||
               location.pathname === "/sort_by/year/order_by/asc"

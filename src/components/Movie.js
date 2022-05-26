@@ -17,6 +17,7 @@ const Title = styled.h1`
   align-items: center;
   font-size: 18px;
   text-align: center;
+  overflow: auto;
 `;
 
 const Info = styled.div`
